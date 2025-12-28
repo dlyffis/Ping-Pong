@@ -1,3 +1,4 @@
+from random import random
 import pygame
 
 class Sprite:
@@ -45,6 +46,9 @@ class Ball(Sprite):
             else:
                 self.rect.left = player.rect.right
             self.velocity.x =- self.velocity.x
+            self.velocity.rotate_ip( (random() - 0.5) * 30 )
+            self.speed += 0.8
+            
     
     def check_y_collision(self, player):
         if self.rect.colliderect(player.rect):
@@ -66,6 +70,16 @@ class Ball(Sprite):
         self.rect.y += vector.y
         self.check_y_collision(left_player)
         self.check_y_collision(right_player)
+
+        if self.rect.top <= 0:
+            self.rect.top = 0
+            self.velocity.y = -self.velocity.y
+
+        if self.rect.bottom >= 600:
+            self.rect.bottom = 600
+            self.velocity.y = -self.velocity.y
+        
+
 
 
 
