@@ -1,5 +1,7 @@
 from random import random
 import pygame
+import sys
+import os
 
 class Sprite:
     def __init__(self, center, image):
@@ -63,6 +65,7 @@ class Ball(Sprite):
             self.velocity.x =- self.velocity.x
             self.velocity.rotate_ip( (random() - 0.5) * 30 )
             self.speed += 0.8
+            hit_sound.play()
             
     
     def check_y_collision(self, player):
@@ -95,6 +98,12 @@ class Ball(Sprite):
             self.velocity.y = -self.velocity.y
         
 
+def get_path(relative_pass):
+    try:
+        base_path = sys._MEIPASS
+    except:
+        base_path = os.path.abspath('.')
+    return os.path.join(base_path, relative_pass)
 
 
 pygame.init()
@@ -104,20 +113,30 @@ surface = window.get_surface()
 clock = pygame.Clock()
 font = pygame.Font(None, 32)
 
-image = pygame.Surface( (40, 100) )
-image.fill('blue')
+image = pygame.image.load(get_path('images/ракетка.webp'))
+image = pygame.transform.scale(image, (140, 140))
 left_player = Player( (40,300), image, 7)
 right_player = Player( (800-40,300), image, 7)
 
-image = pygame.Surface( (20,20) )
-image.fill('white')
-pygame.draw.aacircle(image, 'green', (10,10), 10)
+image = pygame.image.load(get_path('images/мячик.png'))
+image = pygame.transform.scale(image, (55, 35))
 ball = Ball( (400,300), image, 5)
+
+background = pygame.image.load(get_path('images/фон1.jpg'))
+background = pygame.transform.scale(background, (800, 600))
+
 
 running = True
 
 right_score = 0
 left_score = 0
+
+pygame.mixer.music.load(get_path('sounds/background_music.mp3'))
+pygame.mixer.music.set_volume(0.2) # [0 - 1]
+pygame.mixer.music.play(loops = -1)
+
+hit_sound = pygame.mixer.Sound(get_path('sounds/hit.mp3'))
+hit_sound.set_volume(0.8) # [0 - 1]
 
 while running:
     # Обработка событий
@@ -163,7 +182,7 @@ while running:
     # Отрисовка
     # RGB - (0-255, 0-255, 0-255)
     # цвет в кавычках - 'red'
-    surface.fill('white')
+    surface.blit(background, (0, 0))
 
     left_player.render(surface)
     right_player.render(surface)
@@ -177,7 +196,6 @@ while running:
     window.flip()
     clock.tick(60)
     window.title = 'FPS:' + str(round(clock.get_fps()))
-
 
 
 pyinstaller --onefile --windowed --add-data "images;images" --add-data "sounds;sounds" --icon="images\icon.png" main.py
