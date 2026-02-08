@@ -196,7 +196,3 @@ while running:
     window.flip()
     clock.tick(60)
     window.title = 'FPS:' + str(round(clock.get_fps()))
-
-
-pyinstaller --onefile --windowed --add-data "images;images" --add-data "sounds;sounds" --icon="images\icon.png" main.py
-py -m pip install pyinstaller
